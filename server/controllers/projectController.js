@@ -8,11 +8,12 @@ exports.createProject = async (req, res) => {
       description: req.body.description,
       liveLink: req.body.liveLink,
       githubLink: req.body.githubLink,
+
+      // ✅ CLOUDINARY IMAGE URL
       image: req.file ? req.file.path : ""
     });
 
     res.json(project);
-
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: error.message });
@@ -42,21 +43,27 @@ exports.deleteProject = async (req, res) => {
 // UPDATE
 exports.updateProject = async (req, res) => {
   try {
+    const updateData = {
+      title: req.body.title,
+      description: req.body.description,
+      liveLink: req.body.liveLink,
+      githubLink: req.body.githubLink,
+    };
+
+    // ✅ Cloudinary image replace
+    if (req.file) {
+      updateData.image = req.file.path;
+    }
+
     const updated = await Project.findByIdAndUpdate(
       req.params.id,
-      {
-        title: req.body.title,
-        description: req.body.description,
-        liveLink: req.body.liveLink,
-        githubLink: req.body.githubLink,
-        image: req.file ? req.file.path : req.body.image
-      },
+      updateData,
       { new: true }
     );
 
     res.json(updated);
-
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: error.message });
   }
 };
